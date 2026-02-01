@@ -1,7 +1,7 @@
 from rich.console import Console
 from langchain_core.messages import HumanMessage
 from src.graph.workflow import graph
-from src.db.db_sqlite import delete_db
+from src.db.db_sqlite import delete_db, conn
 console = Console()
 
 # Thread ID para manter contexto
@@ -21,6 +21,7 @@ while True:
     
     if user_input.lower() == 'exit':
         console.print("\n[bold red]Encerrando...[/]")
+        conn.close()
         break
     
     elif user_input == '0':
@@ -30,8 +31,18 @@ while True:
     # Invoca o graph com a mensagem do usuário
     entrada = {'messages': [HumanMessage(content=user_input)]}
     result = graph.invoke(entrada, config=config)
-    
-    # Pega e exibe a resposta da IA
+
     if result.get('messages'):
-        ai_response = result["messages"][-1].content
-        console.print(f"\n[bold blue]IA:[/] {ai_response}\n")
+        last_message = result['messages'][-1]
+        metadata = getattr(last_message, 'response_metadata', {})
+        total_tokens = metadata['token_usage']['total_tokens']
+        total_time = metadata['token_usage']['total_time']
+        llm_model = metadata['model_name']
+
+    console.print(
+        f'\n{"="*50}\n\n'
+        f'TOTAL DE TOKENS: [bold yellow]{total_tokens}[/]\n'
+        f'TOTAL DE TEMPO: [bold yellow]{total_time}[/]\n'
+        f'MODEL: [bold yellow]{llm_model}[/]'
+    )
+    

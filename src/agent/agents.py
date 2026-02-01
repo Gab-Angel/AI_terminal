@@ -9,7 +9,7 @@ load_dotenv()
 # CONEXÃO COM A GROQ
 llm_groq = ChatGroq(
     api_key=os.getenv('GROQ_API_KEY'),
-    model_name='openai/gpt-oss-120b',
+    model_name='meta-llama/llama-4-maverick-17b-128e-instruct',
     temperature=0,
 )
 
@@ -24,9 +24,12 @@ prompt_main = get_prompt(prompt_name=PROMPT_AI)
 
 def agent_main(state, prompt_ia: str, llm_model):
     
+    print('🤖 Agente pensando...')
+
     prompt_ia = prompt_main
 
-    message_history = state['messages']
+    MAX_MESSAGES = 20
+    message_history = state['messages'][-MAX_MESSAGES:]
     
     system_prompt = SystemMessage(content=prompt_ia)
     

@@ -4,6 +4,9 @@ import shutil
 import os
 from langgraph.prebuilt import ToolNode
 from src.agent.agents import llm_groq
+from src.ui.console_ui import ConsoleUI
+
+ui = ConsoleUI()
 
 class Tools:
     @tool(description="""
@@ -31,8 +34,7 @@ class Tools:
         ✅ list_dir("/home") → confirmar → list_dir("/home/user_real")
         """)
     def list_directory(path: str) -> str:
-
-        print('=============== LISTAR DIR ==================')
+        ui.show_tool_action('list_directory', path)
         try:
             items = os.listdir(path)
             return "\n".join(items)
@@ -49,15 +51,12 @@ class Tools:
             Mensagem informando se existe ou não
         """)
     def verify_if_exists(path: str) -> str:
-        
-        print('=============== VERIFY IF EXISTS ==================')
+        ui.show_tool_action('verify_if_exists', path)
         try:
             if os.path.exists(path):
                 tipo = "diretório" if os.path.isdir(path) else "arquivo"
-                print(f'✓ Existe: {path} ({tipo})')
                 return f"✓ '{path}' existe e é um {tipo}"
             else:
-                print(f'✗ Não existe: {path}')
                 return f"✗ '{path}' não existe"
         except Exception as e:
             return f"❌ Erro ao verificar: {str(e)}"
@@ -73,12 +72,10 @@ class Tools:
             Mensagem de sucesso ou erro
         """)
     def create_file(file_path: str, content: str = "") -> str:
-        
-        print('=============== CREATE FILE ==================')
+        ui.show_tool_action('create_file', file_path)
         try:
             with open(file_path, 'w', encoding='utf-8') as file:
                 file.write(content)
-            print(f'✓ Arquivo criado: {file_path}')
             return f"✓ Arquivo '{file_path}' criado com sucesso"
         except PermissionError:
             return f"❌ Erro: Sem permissão para criar '{file_path}'"
@@ -95,11 +92,9 @@ class Tools:
             Mensagem de sucesso ou erro
         """)
     def create_directory(dir_path: str) -> str:
-
-        print('=============== CREATE DIRECTORY ==================')
+        ui.show_tool_action('create_directory', dir_path)
         try:
             os.makedirs(dir_path, exist_ok=True)
-            print(f'✓ Diretório criado: {dir_path}')
             return f"✓ Diretório '{dir_path}' criado com sucesso"
         except PermissionError:
             return f"❌ Erro: Sem permissão para criar '{dir_path}'"
@@ -116,12 +111,10 @@ class Tools:
             Conteúdo do arquivo ou mensagem de erro
         """)
     def read_file(file_path: str) -> str:
-        
-        print('=============== READ FILE ==================')
+        ui.show_tool_action('read_file', file_path)
         try:
             with open(file_path, 'r', encoding='utf-8') as file:
                 content = file.read()
-            print(f'✓ Arquivo lido: {file_path}')
             return f"Conteúdo do arquivo '{file_path}':\n\n{content}"
         except FileNotFoundError:
             return f"❌ Erro: Arquivo '{file_path}' não encontrado"
@@ -140,8 +133,7 @@ class Tools:
             Conteúdo do arquivo ou mensagem de erro
         """)
     def read_pdf(file_path: str) -> str:
-
-        print('=============== READ PDF ==================')
+        ui.show_tool_action('read_pdf', file_path)
         try:
             with open(file_path, 'rb') as file:
                 reader = PyPDF2.PdfReader(file)
@@ -162,8 +154,7 @@ class Tools:
             Informações do arquivo (tamanho, datas, permissões)
         """)
     def get_file_info(file_path: str) -> str:
-        
-        print('=============== GET FILE INFO ==================')
+        ui.show_tool_action('get_file_info', file_path)
         try:
             stats = os.stat(file_path)
             from datetime import datetime
@@ -179,7 +170,6 @@ class Tools:
     - Modificado em: {modificado}
     - Tipo: {'Diretório' if os.path.isdir(file_path) else 'Arquivo'}
     """
-            print(f'✓ Info obtida: {file_path}')
             return info
         except FileNotFoundError:
             return f"❌ Erro: '{file_path}' não encontrado"
@@ -197,12 +187,10 @@ class Tools:
             Mensagem de sucesso ou erro
         """)
     def edit_file(file_path: str, new_content: str) -> str:
-        
-        print('=============== EDIT FILE ==================')
+        ui.show_tool_action('edit_file', file_path)
         try:
             with open(file_path, 'w', encoding='utf-8') as file:
                 file.write(new_content)
-            print(f'✓ Arquivo editado: {file_path}')
             return f"✓ Arquivo '{file_path}' editado com sucesso"
         except FileNotFoundError:
             return f"❌ Erro: Arquivo '{file_path}' não encontrado"
@@ -222,11 +210,9 @@ class Tools:
             Mensagem de sucesso ou erro
         """)
     def rename(old_path: str, new_path: str) -> str:
-        
-        print('=============== RENAME ==================')
+        ui.show_tool_action('rename', old_path, new_path)
         try:
             os.rename(old_path, new_path)
-            print(f'✓ Renomeado: {old_path} → {new_path}')
             return f"✓ '{old_path}' renomeado para '{new_path}'"
         except FileNotFoundError:
             return f"❌ Erro: '{old_path}' não encontrado"
@@ -248,13 +234,9 @@ class Tools:
             Mensagem de sucesso ou erro
         """)
     def move(source_path: str, destination_path: str) -> str:
-        
-        print('=============== MOVE ==================')
-        print(source_path)
-        print(destination_path)
+        ui.show_tool_action('move', source_path, destination_path)
         try:
             shutil.move(source_path, destination_path)
-            print(f'✓ Movido: {source_path} → {destination_path}')
             return f"✓ '{source_path}' movido para '{destination_path}'"
         except FileNotFoundError:
             return f"❌ Erro: '{source_path}' não encontrado"
@@ -274,16 +256,13 @@ class Tools:
             Mensagem de sucesso ou erro
         """)
     def copy(source_path: str, destination_path: str) -> str:
-        
-        print('=============== COPY ==================')
+        ui.show_tool_action('copy', source_path, destination_path)
         try:
             if os.path.isfile(source_path):
                 shutil.copy2(source_path, destination_path)
-                print(f'✓ Arquivo copiado: {source_path} → {destination_path}')
                 return f"✓ Arquivo copiado de '{source_path}' para '{destination_path}'"
             elif os.path.isdir(source_path):
                 shutil.copytree(source_path, destination_path, dirs_exist_ok=True)
-                print(f'✓ Diretório copiado: {source_path} → {destination_path}')
                 return f"✓ Diretório copiado de '{source_path}' para '{destination_path}'"
             else:
                 return f"❌ Erro: '{source_path}' não encontrado"
@@ -304,11 +283,9 @@ class Tools:
             Mensagem de sucesso ou erro
         """)
     def delete_file(file_path: str) -> str:
-        
-        print('=============== DELETE FILE ==================')
+        ui.show_tool_action('delete_file', file_path)
         try:
             os.remove(file_path)
-            print(f'✓ Arquivo deletado: {file_path}')
             return f"✓ Arquivo '{file_path}' deletado com sucesso"
         except FileNotFoundError:
             return f"❌ Erro: Arquivo '{file_path}' não encontrado"
@@ -329,11 +306,9 @@ class Tools:
             Mensagem de sucesso ou erro
         """)
     def delete_directory(dir_path: str) -> str:
-        
-        print('=============== DELETE DIRECTORY ==================')
+        ui.show_tool_action('delete_directory', dir_path)
         try:
             shutil.rmtree(dir_path)
-            print(f'✓ Diretório deletado: {dir_path}')
             return f"✓ Diretório '{dir_path}' deletado com sucesso"
         except FileNotFoundError:
             return f"❌ Erro: Diretório '{dir_path}' não encontrado"
@@ -353,8 +328,7 @@ class Tools:
             Lista de arquivos encontrados
         """)
     def search_file(directory: str, filename: str) -> str:
-        
-        print('=============== SEARCH FILE ==================')
+        ui.show_tool_action('search_file', directory, filename)
         try:
             found = []
             for root, dirs, files in os.walk(directory):
@@ -365,7 +339,6 @@ class Tools:
             if found:
                 result = f"✓ Encontrados {len(found)} arquivo(s):\n"
                 result += "\n".join(f"- {f}" for f in found)
-                print(f'✓ Busca concluída: {len(found)} arquivo(s)')
                 return result
             else:
                 return f"✗ Nenhum arquivo com '{filename}' encontrado em '{directory}'"
@@ -390,7 +363,5 @@ class Tools:
         search_file,
     ]
 
-
     tool_node = ToolNode(tools_main)
-
     llm_with_tools = llm_groq.bind_tools(tools_main)

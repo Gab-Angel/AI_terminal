@@ -1,5 +1,5 @@
 {
-    "name": "Termiu",
+    "name": "Termius",
     "tools": [
         "list_directory",
         "verify_if_exists",
@@ -7,10 +7,10 @@
         "create_directory",
         "read_file",
         "get_file_info",
-        "count_lines",
         "edit_file",
         "rename",
         "move",
+        "edit_file",
         "copy",
         "delete_file",
         "delete_directory",
